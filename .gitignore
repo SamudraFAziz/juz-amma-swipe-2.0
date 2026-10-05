@@ -1,0 +1,29 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+local.properties
+.env
+.env.local
+
+# Keystore & Signing Secrets
+debug.keystore
+debug.keystore.base64
+*.jks
+*.keystore
+
+# Build Outputs & Android Studio
+/build
+app/build
+.build-outputs/
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+
+# IDE & OS
+/.idea/
+.DS_Store
+Thumbs.db
+

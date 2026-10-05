@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Open Book / Quran stand vector centered in safe zone -->
+    <!-- Outer Crescent & Star accent -->
+    <path
+        android:fillColor="#FDFBF7"
+        android:pathData="M54,26 C57.8,26 61,29.2 61,33 C61,36.8 57.8,40 54,40 C50.2,40 47,36.8 47,33 C47,29.2 50.2,26 54,26 Z M54,28.5 C52,28.5 50.3,30.2 50.3,32.2 C50.3,34.2 52,35.9 54,35.9 C56,35.9 57.7,34.2 57.7,32.2 C57.7,30.2 56,28.5 54,28.5 Z" />
+
+    <!-- Quran Book Silhouette -->
+    <path
+        android:fillColor="#F4D068"
+        android:pathData="M30,46 C38,43 51,46 54,49 C57,46 70,43 78,46 L78,74 C70,71 57,74 54,77 C51,74 38,71 30,74 Z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,48 C39,45.5 50,48 53,50.5 L53,75.5 C50,73 39,70.5 32,73 Z" />
+
+    <path
+        android:fillColor="#FDFBF7"
+        android:pathData="M76,48 C69,45.5 58,48 55,50.5 L55,75.5 C58,73 69,70.5 76,73 Z" />
+
+    <!-- Quran Stand X base -->
+    <path
+        android:fillColor="#E5B842"
+        android:pathData="M36,73 L48,85 L52,85 L38,71 Z M72,73 L60,85 L56,85 L70,71 Z" />
+</vector>

@@ -1,0 +1,7 @@
+{
+  "name": "Juz Amma Swipe",
+  "description": "Juz Amma recitation app with Mishary Rashid Alafasy audio auto-play, verse-by-verse swiping, tactile navigation, and student Tajweed color highlighting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
