@@ -15,6 +15,11 @@ enum class RevelationType(val title: String, val iconText: String) {
     MEDINAN("Medinan", "مدنيّة")
 }
 
+enum class SurahSortOrder {
+    ASCENDING,  // 78 -> 114 (An-Naba' to An-Nas)
+    DESCENDING  // 114 -> 78 (An-Nas to An-Naba', shortest surahs first)
+}
+
 data class Verse(
     val globalIndex: Int,                // 0-based index across all Juz Amma verses (~564 verses)
     val surahNumber: Int,               // 78..114

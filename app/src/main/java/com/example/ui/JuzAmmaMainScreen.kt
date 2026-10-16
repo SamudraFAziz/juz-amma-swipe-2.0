@@ -64,6 +64,7 @@ fun JuzAmmaMainScreen(
     val showTransliteration by viewModel.showTransliteration.collectAsState()
     val showTranslation by viewModel.showTranslation.collectAsState()
     val translationLanguage by viewModel.translationLanguage.collectAsState()
+    val surahSortOrder by viewModel.surahSortOrder.collectAsState()
     val isMemorizationMode by viewModel.isMemorizationMode.collectAsState()
     val bookmarkedIndexes by viewModel.bookmarkedVerseIndexes.collectAsState()
     val bookmarkedVerses by viewModel.bookmarkedVerses.collectAsState()
@@ -149,6 +150,8 @@ fun JuzAmmaMainScreen(
                         isDarkMode = isDarkMode,
                         language = translationLanguage,
                         bookmarkedVerses = bookmarkedVerses,
+                        sortOrder = surahSortOrder,
+                        onSortOrderChanged = { newOrder -> viewModel.setSurahSortOrder(newOrder) },
                         onSurahSelected = { surahId ->
                             viewModel.jumpToSurah(surahId)
                             currentScreen = ScreenDestination.VERSE_SWIPE
@@ -358,7 +361,9 @@ fun JuzAmmaMainScreen(
                     viewModel.jumpToSurah(surahNumber)
                 },
                 onDismiss = { showSurahIndexSheet = false },
-                language = translationLanguage
+                language = translationLanguage,
+                sortOrder = surahSortOrder,
+                onSortOrderChanged = { newOrder -> viewModel.setSurahSortOrder(newOrder) }
             )
         }
 

@@ -38,6 +38,31 @@ object AppStrings {
         TranslationLanguage.INDONESIAN -> "Daftar Surah (78 - 114)"
     }
 
+    fun allSurahsHeader(order: com.example.model.SurahSortOrder, lang: TranslationLanguage): String = when (lang) {
+        TranslationLanguage.ENGLISH -> if (order == com.example.model.SurahSortOrder.ASCENDING) "All Surahs (78 - 114)" else "All Surahs (114 - 78)"
+        TranslationLanguage.INDONESIAN -> if (order == com.example.model.SurahSortOrder.ASCENDING) "Daftar Surah (78 - 114)" else "Daftar Surah (114 - 78)"
+    }
+
+    fun sortOrderHeader(lang: TranslationLanguage): String = when (lang) {
+        TranslationLanguage.ENGLISH -> "Sort Order"
+        TranslationLanguage.INDONESIAN -> "Urutan Surah"
+    }
+
+    fun sortAscendingLabel(lang: TranslationLanguage): String = when (lang) {
+        TranslationLanguage.ENGLISH -> "78 → 114 (An-Naba')"
+        TranslationLanguage.INDONESIAN -> "78 → 114 (An-Naba')"
+    }
+
+    fun sortDescendingLabel(lang: TranslationLanguage): String = when (lang) {
+        TranslationLanguage.ENGLISH -> "114 → 78 (An-Nas)"
+        TranslationLanguage.INDONESIAN -> "114 → 78 (An-Nas)"
+    }
+
+    fun sortDescendingHint(lang: TranslationLanguage): String = when (lang) {
+        TranslationLanguage.ENGLISH -> "Learning sequence: starts from shorter Surahs"
+        TranslationLanguage.INDONESIAN -> "Urutan belajar: mulai dari Surah terpendek"
+    }
+
     fun noSurahFound(lang: TranslationLanguage): String = when (lang) {
         TranslationLanguage.ENGLISH -> "No Surahs found matching your search."
         TranslationLanguage.INDONESIAN -> "Tidak ada Surah yang cocok dengan pencarian."

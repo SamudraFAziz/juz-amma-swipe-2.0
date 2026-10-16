@@ -59,6 +59,19 @@ class UserPreferencesManager(context: Context) {
         prefs.edit().putBoolean(KEY_DARK_MODE, isDark).apply()
     }
 
+    fun getSurahSortOrder(): com.example.model.SurahSortOrder {
+        val name = prefs.getString(KEY_SURAH_SORT_ORDER, com.example.model.SurahSortOrder.ASCENDING.name)
+        return try {
+            com.example.model.SurahSortOrder.valueOf(name ?: com.example.model.SurahSortOrder.ASCENDING.name)
+        } catch (_: Exception) {
+            com.example.model.SurahSortOrder.ASCENDING
+        }
+    }
+
+    fun saveSurahSortOrder(order: com.example.model.SurahSortOrder) {
+        prefs.edit().putString(KEY_SURAH_SORT_ORDER, order.name).apply()
+    }
+
     companion object {
         private const val PREFS_NAME = "juz_amma_swipe_prefs"
         private const val KEY_LAST_SURAH_ID = "last_surah_id"
@@ -68,5 +81,6 @@ class UserPreferencesManager(context: Context) {
         private const val KEY_BOOKMARKS = "bookmarked_verse_indexes"
         private const val KEY_LANGUAGE = "app_translation_language"
         private const val KEY_DARK_MODE = "app_dark_mode"
+        private const val KEY_SURAH_SORT_ORDER = "app_surah_sort_order"
     }
 }

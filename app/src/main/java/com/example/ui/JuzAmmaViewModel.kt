@@ -9,6 +9,7 @@ import com.example.data.JuzAmmaRepository
 import com.example.data.TranslationLanguage
 import com.example.data.UserPreferencesManager
 import com.example.model.Surah
+import com.example.model.SurahSortOrder
 import com.example.model.TajweedRuleType
 import com.example.model.Verse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,10 @@ class JuzAmmaViewModel(application: Application) : AndroidViewModel(application)
         preferencesManager.getSavedTranslationLanguage() ?: TranslationLanguage.INDONESIAN
     )
     val translationLanguage: StateFlow<TranslationLanguage> = _translationLanguage.asStateFlow()
+
+    // Persistent Surah Sort Order preference (ASCENDING: 78->114, DESCENDING: 114->78)
+    private val _surahSortOrder = MutableStateFlow(preferencesManager.getSurahSortOrder())
+    val surahSortOrder: StateFlow<SurahSortOrder> = _surahSortOrder.asStateFlow()
 
     // Current active Surah and Verse within that Surah
     private val initialSurahId = preferencesManager.getLastReadSurahId().coerceIn(78, 114)
@@ -270,6 +275,20 @@ class JuzAmmaViewModel(application: Application) : AndroidViewModel(application)
     fun setTranslationLanguage(language: TranslationLanguage) {
         _translationLanguage.value = language
         preferencesManager.saveTranslationLanguage(language)
+    }
+
+    fun setSurahSortOrder(order: SurahSortOrder) {
+        _surahSortOrder.value = order
+        preferencesManager.saveSurahSortOrder(order)
+    }
+
+    fun toggleSurahSortOrder() {
+        val nextOrder = if (_surahSortOrder.value == SurahSortOrder.ASCENDING) {
+            SurahSortOrder.DESCENDING
+        } else {
+            SurahSortOrder.ASCENDING
+        }
+        setSurahSortOrder(nextOrder)
     }
 
     fun toggleMemorizationMode() {

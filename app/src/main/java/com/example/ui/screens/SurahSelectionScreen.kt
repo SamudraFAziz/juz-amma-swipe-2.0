@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DarkMode
@@ -33,9 +35,12 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -70,6 +75,7 @@ import com.example.data.getLocalizedMeaning
 import com.example.data.getLocalizedName
 import com.example.model.RevelationType
 import com.example.model.Surah
+import com.example.model.SurahSortOrder
 import com.example.model.Verse
 import com.example.ui.components.IslamicRosetteMedallion
 import com.example.ui.components.drawArabesqueFlourish
@@ -87,19 +93,28 @@ fun SurahSelectionScreen(
     onToggleLanguage: () -> Unit,
     onOpenTutorialFaq: () -> Unit,
     modifier: Modifier = Modifier,
+    sortOrder: SurahSortOrder = SurahSortOrder.ASCENDING,
+    onSortOrderChanged: (SurahSortOrder) -> Unit = {},
     bookmarkedVerses: List<Verse> = emptyList(),
     onBookmarkSelected: (surahNumber: Int, verseNumber: Int) -> Unit = { _, _ -> },
     onOpenBookmarksSheet: () -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredSurahs by remember(searchQuery, surahs, language) {
+    val sortedSurahs = remember(surahs, sortOrder) {
+        when (sortOrder) {
+            SurahSortOrder.ASCENDING -> surahs.sortedBy { it.id }
+            SurahSortOrder.DESCENDING -> surahs.sortedByDescending { it.id }
+        }
+    }
+
+    val filteredSurahs by remember(searchQuery, sortedSurahs, language) {
         derivedStateOf {
             if (searchQuery.isBlank()) {
-                surahs
+                sortedSurahs
             } else {
                 val query = searchQuery.trim().lowercase()
-                surahs.filter { surah ->
+                sortedSurahs.filter { surah ->
                     surah.nameTransliteration.lowercase().contains(query) ||
                     surah.getLocalizedName(language).lowercase().contains(query) ||
                     surah.nameTranslation.lowercase().contains(query) ||
@@ -298,6 +313,75 @@ fun SurahSelectionScreen(
                         )
                     )
 
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Ascending / Descending Sort Filter Chips below search function
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        FilterChip(
+                            selected = sortOrder == SurahSortOrder.ASCENDING,
+                            onClick = { onSortOrderChanged(SurahSortOrder.ASCENDING) },
+                            label = {
+                                Text(
+                                    text = AppStrings.sortAscendingLabel(language),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = if (sortOrder == SurahSortOrder.ASCENDING) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDownward,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                            modifier = Modifier.testTag("sort_ascending_chip")
+                        )
+
+                        FilterChip(
+                            selected = sortOrder == SurahSortOrder.DESCENDING,
+                            onClick = { onSortOrderChanged(SurahSortOrder.DESCENDING) },
+                            label = {
+                                Text(
+                                    text = AppStrings.sortDescendingLabel(language),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = if (sortOrder == SurahSortOrder.DESCENDING) FontWeight.Bold else FontWeight.Normal
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowUpward,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ),
+                            modifier = Modifier.testTag("sort_descending_chip")
+                        )
+                    }
+
+                    if (sortOrder == SurahSortOrder.DESCENDING) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = AppStrings.sortDescendingHint(language),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(14.dp))
 
                     Row(
@@ -305,12 +389,34 @@ fun SurahSelectionScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = AppStrings.allSurahsHeader(language),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = AppStrings.allSurahsHeader(sortOrder, language),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            IconButton(
+                                onClick = {
+                                    onSortOrderChanged(
+                                        if (sortOrder == SurahSortOrder.ASCENDING) SurahSortOrder.DESCENDING else SurahSortOrder.ASCENDING
+                                    )
+                                },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .testTag("reverse_surah_order_button")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.SwapVert,
+                                    contentDescription = "Reverse order",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
                         Text(
                             text = "${filteredSurahs.size} / ${surahs.size}",
                             style = MaterialTheme.typography.labelMedium,

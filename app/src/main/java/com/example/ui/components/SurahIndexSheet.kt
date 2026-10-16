@@ -18,12 +18,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +55,7 @@ import com.example.data.TranslationLanguage
 import com.example.data.getLocalizedMeaning
 import com.example.data.getLocalizedName
 import com.example.model.Surah
+import com.example.model.SurahSortOrder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,16 +65,25 @@ fun SurahIndexSheet(
     selectedSurahNumber: Int,
     onSurahSelected: (Int) -> Unit,
     onDismiss: () -> Unit,
-    language: TranslationLanguage = TranslationLanguage.ENGLISH
+    language: TranslationLanguage = TranslationLanguage.ENGLISH,
+    sortOrder: SurahSortOrder = SurahSortOrder.ASCENDING,
+    onSortOrderChanged: ((SurahSortOrder) -> Unit)? = null
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val filteredSurahs by remember(searchQuery, surahs, language) {
+    val sortedSurahs = remember(surahs, sortOrder) {
+        when (sortOrder) {
+            SurahSortOrder.ASCENDING -> surahs.sortedBy { it.id }
+            SurahSortOrder.DESCENDING -> surahs.sortedByDescending { it.id }
+        }
+    }
+
+    val filteredSurahs by remember(searchQuery, sortedSurahs, language) {
         derivedStateOf {
-            if (searchQuery.isBlank()) surahs
+            if (searchQuery.isBlank()) sortedSurahs
             else {
                 val q = searchQuery.trim().lowercase()
-                surahs.filter {
+                sortedSurahs.filter {
                     it.nameTransliteration.lowercase().contains(q) ||
                     it.getLocalizedName(language).lowercase().contains(q) ||
                     it.nameTranslation.lowercase().contains(q) ||
@@ -142,6 +156,53 @@ fun SurahIndexSheet(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                 )
             )
+
+            if (onSortOrderChanged != null) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FilterChip(
+                        selected = sortOrder == SurahSortOrder.ASCENDING,
+                        onClick = { onSortOrderChanged(SurahSortOrder.ASCENDING) },
+                        label = {
+                            Text(
+                                text = "78 → 114 (An-Naba')",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDownward,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    FilterChip(
+                        selected = sortOrder == SurahSortOrder.DESCENDING,
+                        onClick = { onSortOrderChanged(SurahSortOrder.DESCENDING) },
+                        label = {
+                            Text(
+                                text = "114 → 78 (An-Nas)",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.ArrowUpward,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 
